@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true); // Status is used to track whether the login or registration form is currently displayed.
   const [email, setEmail] = useState('');
@@ -95,12 +97,33 @@ const styles = StyleSheet.create({
 });
 
 // Functions to handle login and registration need to be added here.
-const handleLogin = () => {
-  //
+const auth = getAuth();
+const handleLogin = async () => {
+  try {
+    await auth().signInWithEmailAndPassword(email, password);
+    // Handle successful login
+  } catch (error) {
+    console.error('Login failed:', error);
+    // Handle login error
+  }
 };
 
-const handleSignUp = () => {
+const handleSignUp = async () => {
   // 
+  if (password !== confirmPassword) {
+    console.error("Passwords don't match");
+    return;
+  }
+
+  try {
+    await auth().createUserWithEmailAndPassword(email, password);
+    // Handle successful sign-up
+  } catch (error) {
+    console.error('Sign-up failed:', error);
+    // Handle sign-up error
+  }
 };
+
+
 
 export default AuthScreen;
