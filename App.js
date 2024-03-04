@@ -1,13 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import AuthScreen from './Screens/AuthScreen';
+import PatientHomeScreen from './Screens/PatientHomeScreen';
+
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   console.log("App executed");
 
   return (
     <SafeAreaView style={styles.container}>
-      <AuthScreen />
+      <PatientHomeScreen />
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -20,4 +24,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}); 
+
+
+
+
