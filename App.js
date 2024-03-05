@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import AuthScreen from './Screens/AuthScreen';
 import PatientHomeScreen from './Screens/PatientHomeScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import CameraScreen from './Screens/CameraScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -10,20 +11,13 @@ export default function App() {
   console.log("App executed");
 
   return (
-    <SafeAreaView style={styles.container}>
-      <PatientHomeScreen />
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <PatientHomeScreen />
+
   );
 } 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  
 }); 
 
 

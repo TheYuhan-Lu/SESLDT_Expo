@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView, SafeAreaVi
 import { Ionicons } from '@expo/vector-icons';
 
 // For testing hardware set
-const PatientHomeScreen= () => {
+const PatientHomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
     <View style={styles.topBar}>
