@@ -69,9 +69,9 @@ const CameraScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => {
             setFlashMode(
-              flashMode === Camera.Constants.FlashMode.on
+              flashMode === Camera.Constants.FlashMode.torch
                 ? Camera.Constants.FlashMode.off
-                : Camera.Constants.FlashMode.on
+                : Camera.Constants.FlashMode.torch
             );
           }}>
             <Ionicons name="flashlight" size={30} color="white" />
