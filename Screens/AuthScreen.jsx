@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../firebaseConfig";
+import {getApp, getAuth, auth } from "../firebaseConfig";
 
 const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true); // Status is used to track whether the login or registration form is currently displayed.
@@ -12,6 +12,37 @@ const AuthScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const toggleForm = () => setIsLogin(!isLogin); // Switch the function of the form
+
+  const handleLogin = async () => {
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          // Navigate to the next screen or perform any other actions
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // Handle sign-in error
+        });
+  };
+  
+  const handleSignUp = async () => {
+    // 
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          // Navigate to the next screen or perform any other actions
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // Handle sign-up error
+        });
+  
+  };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -98,32 +129,36 @@ const styles = StyleSheet.create({
 });
 
 // Functions to handle login and registration need to be added here.
-
+/*
 const handleLogin = async () => {
-  try {
-    await auth().signInWithEmailAndPassword(email, password);
-    // Handle successful login
-  } catch (error) {
-    console.error('Login failed:', error);
-    // Handle login error
-  }
+  signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // Navigate to the next screen or perform any other actions
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // Handle sign-in error
+      });
 };
 
 const handleSignUp = async () => {
   // 
-  if (password !== confirmPassword) {
-    console.error("Passwords don't match");
-    return;
-  }
+  createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        // Navigate to the next screen or perform any other actions
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // Handle sign-up error
+      });
 
-  try {
-    await auth().createUserWithEmailAndPassword(email, password);
-    // Handle successful sign-up
-  } catch (error) {
-    console.error('Sign-up failed:', error);
-    // Handle sign-up error
-  }
-};
+};*/
 
 
 
