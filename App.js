@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView} from 'react-native';
-import AuthScreen from './Screens/AuthScreen';
-import PatientHomeScreen from './Screens/PatientHomeScreen';
+import AuthScreen from './screens/AuthScreen';
+import PatientHomeScreen from './screens/PatientHomeScreen';
 //import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import CameraScreen from './Screens/CameraScreen';
+import CameraScreen from './screens/CameraScreen';
 
 //const Tab = createBottomTabNavigator();
 
