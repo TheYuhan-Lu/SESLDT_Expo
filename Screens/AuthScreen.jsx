@@ -5,6 +5,9 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 import {getApp, getAuth, auth } from "../firebaseConfig";
 
 import { useNavigation } from '@react-navigation/native';
+
+
+
 const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true); // Status is used to track whether the login or registration form is currently displayed.
   const [email, setEmail] = useState('');

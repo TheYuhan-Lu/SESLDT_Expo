@@ -1,12 +1,12 @@
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Modal, SafeAreaView } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { Ionicons } from '@expo/vector-icons';
 
-const CameraScreen = () => {
+
+const CameraScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
@@ -78,7 +78,7 @@ const CameraScreen = () => {
           </TouchableOpacity>
           </View>
 
-        <TouchableOpacity style={styles.leftButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.leftButton} onPress={() => navigation.navigate('HomeScreen')}>
           <Ionicons name="close" size={30} color="white" />
         </TouchableOpacity>
         </View>
