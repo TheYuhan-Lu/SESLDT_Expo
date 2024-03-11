@@ -16,7 +16,7 @@ const AuthScreen = () => {
   
   const navigation = useNavigation();
   const handleLogin = async () => {
-    signInWithEmailAndPassword(auth, email, password)
+    /*signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
@@ -29,7 +29,19 @@ const AuthScreen = () => {
           const errorMessage = error.message;
           // Handle sign-in error
         });
-        navigation.navigate('PatientHomeScreen');
+        navigation.navigate('PatientHomeScreen');*/
+        console.log("handleLogin function is being called", email, password ); 
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          console.log("User logged in successfully:", user);
+          // Navigate to the next screen or perform any other actions
+          navigation.navigate('PatientHomeScreen');
+      } catch (error) {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // Handle sign-up error
+      }
   };
   
   const handleSignUp = async () => {
