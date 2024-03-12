@@ -8,6 +8,7 @@ import CameraScreen from './screens/CameraScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import ProfileInfoScreen from './screens/ProfileInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -15,12 +16,15 @@ export default function App() {
   console.log("App executed");
 
   return (
+    // <ChatDetailScreen />
+    // <ProfileInfoScreen />
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{headerShown: false,}}>
+      <Stack.Navigator initialRouteName="AuthScreen" screenOptions={{headerShown: false,}}>
         <Stack.Screen name="AuthScreen" component={AuthScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="RecordList" component={RecordListScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="ProfileInfo" component={ProfileInfoScreen} />
         <Stack.Screen name="Chatlist" component={ChatListScreen} />
         <Stack.Screen name="ChatDetail" component={ChatDetailScreen} />
         <Stack.Screen name="Camera" component={CameraScreen} />

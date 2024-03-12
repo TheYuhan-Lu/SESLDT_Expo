@@ -7,7 +7,8 @@ import RecordCard from '../components/RecordCard';
 //To do List：
 // *Navigate to the chat detail page
 // *update/link the page info with the info from database
-// *add multiple record cards
+// *add multiple record cards(how to add all in the database)
+// *A share button that can be easily shared to others via message
 
 const RecordListScreen = ({ navigation }) => {
 const recordExample = {
@@ -30,8 +31,8 @@ const recordExample = {
                      />
         </View>
         </ScrollView>
-          <CustomBottom_Patient />
-          {/* <CustomBottom_Clinic /> */}
+          {/* <CustomBottom_Patient /> */}
+          <CustomBottom_Clinic />
     </SafeAreaView>
   );
 };

@@ -1,137 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import {  SafeAreaView, ScrollView, View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Audio } from 'expo-av';
-import * as ImagePicker from 'expo-image-picker';
-import { CustomBottom_Patient } from '../components/Bottom';
-import { CustomTopBar } from '../components/Topbar';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { colors } from '../styles/globalStyles';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
-const initialMessages = [
-  // 初始化消息列表，可能包含文本、图片和音频消息
-];
 
-const ChatDetailScreen = ({ route }) => {
-  const [messages, setMessages] = useState(initialMessages);
-  const [text, setText] = useState('');
-  const [recording, setRecording] = useState();
-  const [sound, setSound] = useState();
-  const [playingAudioId, setPlayingAudioId] = useState(null); // 跟踪当前正在播放的音频ID
+const ChatDetailScreen = ({ navigation, route }) => {
+    const { userName, userAvatar } = route.params; // 假设这些信息是从ChatListScreen传过来的
+    const [isExpanded, setIsExpanded] = useState(false); 
+    const [message, setMessage] = React.useState('');
 
-  useEffect(() => {
-    return sound
-      ? () => {
-          console.log('Unloading Sound');
-          sound.unloadAsync(); }
-      : undefined;
-  }, [sound]);
+    const onSend = (message) => {
+        if (message.trim()) {
+      console.log("Sending message:", message);
 
-  const sendMessage = async (messageType, content, duration = null) => {
-    const newMessage = {
-      id: Date.now().toString(),
-      text: content,
-      type: messageType,
-      duration,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-    setText('');
-  };
-
-  const pickImage = async () => {
-    // 图片选择逻辑
-  };
-
-  const startRecording = async () => {
-    // 开始录音逻辑
-  };
-
-  const stopRecording = async () => {
-    // 停止录音逻辑，包括保存音频时长
-  };
-
-  const playSound = async (audioUri, audioId) => {
-    if (playingAudioId === audioId) {
-      sound.stopAsync();
-      setPlayingAudioId(null);
-      return;
+      setMessage(''); 
     }
-    const { sound: newSound } = await Audio.Sound.createAsync(
-       { uri: audioUri },
-       { shouldPlay: true }
-    );
-    setSound(newSound);
-    setPlayingAudioId(audioId);
-
-    await newSound.playAsync();
-    newSound.setOnPlaybackStatusUpdate((status) => {
-      if (!status.isPlaying) {
-        setPlayingAudioId(null);
-      }
-    });
   };
-
-  const renderItem = ({ item }) => {
-    let messageContent;
-    switch (item.type) {
-      case 'text':
-        messageContent = <Text>{item.text}</Text>;
-        break;
-      case 'image':
-        messageContent = <Image source={{ uri: item.text }} style={{ width: 200, height: 200 }} />;
-        break;
-      case 'audio':
-        messageContent = (
-          <TouchableOpacity onPress={() => playSound(item.text, item.id)}>
-            <Text>Play Audio ({item.duration ? `${item.duration}s` : 'Loading...' })</Text>
-          </TouchableOpacity>
-        );
-        break;
-      default:
-        messageContent = <Text>Unsupported message type</Text>;
-    }
+    
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
     return (
-      <View style={styles.message}>
-        {messageContent}
-        <Text style={styles.timestamp}>{item.timestamp}</Text>
-      </View>
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-      {/* 其余UI和逻辑 */}
+          <SafeAreaView style={styles.safeArea}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 80}
+    >
+    <View style={styles.header}>
+        <TouchableOpacity style={styles.leftButton} onPress={() => navigation.navigate('Chatlist')}>
+          <Ionicons name="close" size={30} color="gray" />
+        </TouchableOpacity>     
+        {/* Sample here*/}           
+        <Text style={styles.userName}>Alice</Text>
+                    
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileInfo')}>
+          <Image source={require('../assets/Profile.png')} style={styles.userAvatar} />
+        </TouchableOpacity>
+                    
+        {/* <Text style={styles.userName}>{userName}</Text>
+                    
+        <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { userName })}>
+          <Image source={{ uri: userAvatar }} style={styles.userAvatar} />
+        </TouchableOpacity> */}
     </View>
-  );
-};
+                <ScrollView>
+                </ScrollView>            
+    <View style={styles.bottom}>
+        <TouchableOpacity style={styles.leftButton} onPress={() => navigation.navigate('Chatlist')}>
+          <Ionicons name="mic" size={30} color="gray" />
+        </TouchableOpacity>   
 
-// 添加样式
+      <TextInput
+        value={message}
+        onChangeText={setMessage}
+        placeholder="Type your message here..."
+        style={styles.input}
+      />
+      <TouchableOpacity onPress={() => { onSend(message); setMessage(''); }} style={styles.leftButton}>
+        <Ionicons name="send" size={30} color="gray" />
+      </TouchableOpacity>
+
+        <TouchableOpacity style={styles.leftButton} onPress={toggleExpand}>
+          <Ionicons name="add-circle" size={30} color="gray" />
+        </TouchableOpacity>                
+    </View>
+
+
+            </KeyboardAvoidingView>
+            </SafeAreaView>
+    );
+   
+
+  
+};
 const styles = StyleSheet.create({
+safeArea: {
+    flex: 1, 
+    backgroundColor: colors.gray_background, 
+    justifyContent: 'space-between',
+  },
   container: {
     flex: 1,
-    marginTop: 20,
+    backgroundColor: '#fff',
+    },
+  header: {
+    backgroundColor: colors.gray_background, 
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    padding: 15, 
+    borderBottomWidth: 2, 
+    borderBottomColor: '#ccc', 
   },
-  message: {
+  leftButton: {
+    
+  },
+  userName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.green_dark,
+    marginBottom: 8,
+    textAlign: 'center',
+ 
+  },
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20, // 圆形头像
+    },
+    bottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     padding: 10,
-    margin: 5,
-    borderRadius: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.gray_background, 
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
+    input: {
+    flex: 0.8,
+    height: 40,
+    backgroundColor: 'white',
     borderRadius: 20,
-    padding: 10,
-    margin: 10,
+    paddingHorizontal: 10,
+    marginRight: 5,
+    borderWidth: 1,
+    borderColor: '#ccc', // 边框颜色
   },
-  timestamp: {
-    fontSize: 10,
-    alignSelf: 'flex-end',
-  },
-  // Additional styles if necessary
 });
-
 export default ChatDetailScreen;

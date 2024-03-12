@@ -28,16 +28,17 @@ export const CustomBottom_Patient = () => {
     
 };
 
-export const CustomBottom_Clinic = ({ onPress, title }) => {
+export const CustomBottom_Clinic = () => {
+    const navigation = useNavigation();
     return (
         <View style={styles.navBar}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('RecordList')}>
                 <Ionicons name="home" size={30} color="gray" />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Chatlist')}>
                 <Ionicons name="mail" size={30} color="gray" />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                 <Ionicons name="person" size={30} color="gray" />
             </TouchableOpacity>
 

@@ -1,9 +1,11 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Modal, SafeAreaView } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { Ionicons } from '@expo/vector-icons';
+
+//To do List：
+// *Take a photo then use the phote to create record automaticly
 
 
 const CameraScreen = ({ navigation }) => {

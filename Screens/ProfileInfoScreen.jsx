@@ -1,12 +1,20 @@
 import React, {useState } from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, View,TouchableOpacity,Text } from 'react-native';
-import { CustomBottom_Clinic, CustomBottom_Patient } from '../components/Bottom';
 import { CustomTopBar } from '../components/Topbar';
 import ProfileCard from '../components/ProfileCard';
 import { colors } from '../styles/globalStyles';
+import RecordCard from '../components/RecordCard';
 
+const recordExample = {
+    clinicName: "Happy Eye Clinic",
+    patientName: "John Doe",
+    time: "2023-03-03 14:30",
+    summary: "Routine Checkup",
+    details: "No cavities found.",
+    imageUri: "https://example.com/example-image.jpg", // 示例图片URL
+  };
 
-const ProfileScreen = () => {
+const ProfileInfoScreen = () => {
     // For testing hardware set
     const initialProfileData = {
     avatar: 'https://example.com/avatar.jpg', // 或本地require('../path/to/default/avatar.jpg')
@@ -17,7 +25,6 @@ const ProfileScreen = () => {
    email:'test@gamil.com', 
     };
     
-    const settingsOptions = ["Setting", "About", "More"];
     const [profileData, setProfileData] = useState(initialProfileData);
 
     const handleSave = (updatedProfileData) => {
@@ -46,19 +53,13 @@ const ProfileScreen = () => {
         onSave={handleSave}
         onCancel={handleCancel}
         /> 
-     </View>
+        </View>
+            <RecordCard 
+                record={recordExample} 
+                isClinicUser={true} // 或根据实际用户角色动态设置
+                />
 
-    <View style={styles.settingsContainer}>
-      {settingsOptions.map((option, index) => (
-        <TouchableOpacity key={index} style={styles.settingsButton}>
-          <Text style={styles.settingsText}>{option}</Text>
-          {index < settingsOptions.length - 1 && <View style={styles.divider} />}
-        </TouchableOpacity>
-      ))}
-    </View>
       </ScrollView>   
-      {/* <CustomBottom_Patient /> */}
-      <CustomBottom_Clinic />
   </SafeAreaView>
   );
 }
@@ -102,4 +103,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default ProfileScreen;
+export default ProfileInfoScreen;
