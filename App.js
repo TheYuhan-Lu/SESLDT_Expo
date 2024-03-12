@@ -27,7 +27,7 @@ export default function App() {
     // <ChatDetailScreen />
     // <CameraScreen />
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
+      <Stack.Navigator initialRouteName="AuthrcScreen">
         <Stack.Screen name="AuthScreen" component={AuthScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="RecordList" component={RecordListScreen} />

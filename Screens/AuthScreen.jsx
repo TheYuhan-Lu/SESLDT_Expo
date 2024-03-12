@@ -37,9 +37,10 @@ const AuthScreen = () => {
         try {
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
-          console.log("User logged in successfully:", user);
+          
+
           // Navigate to the next screen or perform any other actions
-          navigation.navigate('PatientHomeScreen');
+          navigation.navigate('HomeScreen');
       } catch (error) {
           const errorCode = error.code;
           const errorMessage = error.message;
@@ -49,18 +50,19 @@ const AuthScreen = () => {
   
   const handleSignUp = async () => {
     // 
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed up
-          const user = userCredential.user;
-          // Navigate to the next screen or perform any other actions
-          navigation.navigate('PatientHomeScreen');
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // Handle sign-up error
-        });
+    console.log("sign up function is being called", email, password ); 
+try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // Navigate to the next screen or perform any other actions
+    navigation.navigate('HomeScreen');
+} catch (error) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.error("Sign-up failed:", errorMessage);
+    // Handle sign-up error
+}
   
   };
   
