@@ -16,8 +16,6 @@ export default function App() {
   console.log("App executed");
 
   return (
-    // <ChatDetailScreen />
-    // <ProfileInfoScreen />
     <NavigationContainer>
       <Stack.Navigator initialRouteName="AuthScreen" screenOptions={{headerShown: false,}}>
         <Stack.Screen name="AuthScreen" component={AuthScreen} />
