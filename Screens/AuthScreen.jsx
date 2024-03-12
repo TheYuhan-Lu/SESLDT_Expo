@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import {getApp, getAuth, auth } from "../firebaseConfig";
+import {getApp, getAuth, auth , db} from "../firebaseConfig";
 
 import { useNavigation } from '@react-navigation/native';
 
-
+import { collection, addDoc } from "firebase/firestore";
 
 const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true); // Status is used to track whether the login or registration form is currently displayed.
@@ -18,21 +18,9 @@ const AuthScreen = () => {
   const toggleForm = () => setIsLogin(!isLogin); // Switch the function of the form
   
   const navigation = useNavigation();
-  const handleLogin = async () => {
-    /*signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          // Navigate to the next screen or perform any other actions
-          navigation.navigate('PatientHomeScreen');
 
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // Handle sign-in error
-        });
-        navigation.navigate('PatientHomeScreen');*/
+  const handleLogin = async () => {
+
         console.log("handleLogin function is being called", email, password ); 
         try {
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -55,6 +43,11 @@ try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
+    const docRef = await addDoc(collection(db, "users"), {
+      name: name,
+      email: email
+    });
+    console.log("Document written with ID: ", docRef.id);
     // Navigate to the next screen or perform any other actions
     navigation.navigate('HomeScreen');
 } catch (error) {
