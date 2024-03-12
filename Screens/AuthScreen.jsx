@@ -42,13 +42,12 @@ const AuthScreen = () => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
+        console.log("current user;", user.uid);
         // Call setDoc without await
-       setDoc(doc(db, "users", user.uid), {
+       setDoc(doc(db, "users", "user.uid"), {
             name: name,
-            email: email,
+            email: email
         });
-        
         // Navigate to the next screen or perform any other actions
         navigation.navigate('HomeScreen');
     } catch (error) {
