@@ -6,7 +6,7 @@ import {getApp, getAuth, auth , db} from "../firebaseConfig";
 
 import { useNavigation } from '@react-navigation/native';
 
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc ,setDoc, doc} from "firebase/firestore";
 
 const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true); // Status is used to track whether the login or registration form is currently displayed.
@@ -39,25 +39,25 @@ const AuthScreen = () => {
   const handleSignUp = async () => {
     // 
     console.log("sign up function is being called", email, password ); 
-try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    const docRef = await addDoc(collection(db, "users"), {
-      name: name,
-      email: email
-    });
-    console.log("Document written with ID: ", docRef.id);
-    // Navigate to the next screen or perform any other actions
-    navigation.navigate('HomeScreen');
-} catch (error) {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.error("Sign-up failed:", errorMessage);
-    // Handle sign-up error
-}
-  
-  };
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Call setDoc without await
+       setDoc(doc(db, "users", user.uid), {
+            name: name,
+            email: email,
+        });
+        
+        // Navigate to the next screen or perform any other actions
+        navigation.navigate('HomeScreen');
+    } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error("Sign-up failed:", errorMessage);
+        // Handle sign-up error
+    }
+};
   
 
   return (
