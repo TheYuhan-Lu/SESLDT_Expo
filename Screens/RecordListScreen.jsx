@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, FlatList, TouchableOpacity, StyleSheet, View, Image } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import { CustomBottom_Clinic, CustomBottom_Patient } from '../components/Bottom';
 import { CustomTopBar } from '../components/Topbar';
 import RecordCard from '../components/RecordCard';
@@ -10,13 +10,24 @@ import RecordCard from '../components/RecordCard';
 // *add multiple record cards
 
 const RecordListScreen = ({ navigation }) => {
+const recordExample = {
+    clinicName: "Happy Eye Clinic",
+    patientName: "John Doe",
+    time: "2023-03-03 14:30",
+    summary: "Routine Checkup",
+    details: "No cavities found.",
+    imageUri: "https://example.com/example-image.jpg", // 示例图片URL
+  };
 
   return (
       <SafeAreaView style={styles.safeArea}>
-            <CustomTopBar />
+          <CustomTopBar />
           <ScrollView style={styles.container}> 
               <View style = {styles.container1} >
-            <RecordCard />
+                <RecordCard 
+                    record={recordExample} 
+                    isClinicUser={true} // 或根据实际用户角色动态设置
+                     />
         </View>
         </ScrollView>
           <CustomBottom_Patient />

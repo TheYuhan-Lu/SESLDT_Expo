@@ -4,6 +4,7 @@ export const globalStyles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     borderRadius: 10,
+    marginVertical: 20,
     padding: 20,
     alignItems: 'center', // 确保所有子项在水平方向上居中
     shadowColor: '#000',
