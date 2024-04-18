@@ -44,7 +44,7 @@ const AuthScreen = () => {
         const user = userCredential.user;
         console.log("current user;", user.uid);
         // Call setDoc without await
-       setDoc(doc(db, "users", "user.uid"), {
+       setDoc(doc(db, "users", user.uid), {
             name: name,
             email: email
         });
