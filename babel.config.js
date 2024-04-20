@@ -4,3 +4,10 @@ module.exports = function(api) {
     presets: ['babel-preset-expo'],
   };
 };
+
+[
+  'react-native-reanimated/plugin',
+  {
+    globals: ['__detectObjects'],
+  },
+]
