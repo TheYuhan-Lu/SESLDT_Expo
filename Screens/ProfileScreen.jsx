@@ -5,7 +5,7 @@ import { CustomTopBar } from '../components/Topbar';
 import ProfileCard from '../components/ProfileCard';
 import { colors } from '../styles/globalStyles';
 
-import firestore from '@react-native-firebase/firestore';
+//import firestore from '@react-native-firebase/firestore';
 
 const ProfileScreen = () => {
     // For testing hardware set
@@ -24,11 +24,9 @@ const ProfileScreen = () => {
     const handleSave = (updatedProfileData) => {
         setProfileData(updatedProfileData); // 更新状态以反映更改
 
-
+/*
         const user = auth().currentUser;
         if (user) {
-          setProfileData(updatedProfileData); // 更新状态以反映更改
-  
           try {
               // Update profile data in Firestore
               firestore()
@@ -43,7 +41,7 @@ const ProfileScreen = () => {
           }
       } else {
           alert('No user is currently logged in.');
-      }
+      }*/
   
     };
 
