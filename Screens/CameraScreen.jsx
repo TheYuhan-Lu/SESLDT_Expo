@@ -112,6 +112,7 @@ const CameraScreen = ({ navigation }) => {
         ref={cameraRef}
         autoFocus={focus}
         useCamera2Api={true}
+        
       >
         <TouchableOpacity
           activeOpacity={1}
