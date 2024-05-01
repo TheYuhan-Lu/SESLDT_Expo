@@ -14,6 +14,8 @@ import {
   PanResponder,
 } from "react-native";
 
+import Slider from "@react-native-community/slider";
+
 // Importing Camera and Media Library features from Expo
 // import { Camera } from "expo-camera/next";
 import { Camera } from "expo-camera";
@@ -37,6 +39,8 @@ const CameraScreen = ({ navigation }) => {
 
   // State hook for camera focus
   const [focus, setFocus] = useState(true);
+
+  const [zoom, setZoom] = useState(0); // Zoom level starts at 0 (no zoom)
 
   // Effect hook to request camera and media library permissions on component mount
   useEffect(() => {
@@ -112,7 +116,7 @@ const CameraScreen = ({ navigation }) => {
         ref={cameraRef}
         autoFocus={focus}
         useCamera2Api={true}
-        
+        zoom={zoom}
       >
         <TouchableOpacity
           activeOpacity={1}
@@ -171,6 +175,18 @@ const CameraScreen = ({ navigation }) => {
         >
           <Ionicons name="camera" size={30} color="white" />
         </TouchableOpacity>
+
+        <View style={styles.zoomSlider}>
+          <Slider
+            style={{ width: 400, height: 40 }}
+            minimumValue={0}
+            maximumValue={0.05}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#000000"
+            value={zoom}
+            onValueChange={(value) => setZoom(value)}
+          />
+        </View>
       </Camera>
 
       <Modal
@@ -203,6 +219,14 @@ const CameraScreen = ({ navigation }) => {
 
 // StyleSheet for the component
 const styles = StyleSheet.create({
+  zoomSlider: {
+    position: "absolute",
+    right: "40%",
+    bottom: "50%", // Adjust position based on your layout
+    width: "100%",
+    transform: [{ rotate: '-90deg' }],
+    alignItems: "center",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
