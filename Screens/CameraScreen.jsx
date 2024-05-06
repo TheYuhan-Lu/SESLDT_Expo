@@ -16,6 +16,9 @@ import {
 
 import Slider from "@react-native-community/slider";
 
+// Cant use HoleView
+// import { HoleView } from "react-native-hole-view";
+
 // Importing Camera and Media Library features from Expo
 // import { Camera } from "expo-camera/next";
 import { Camera } from "expo-camera";
@@ -118,6 +121,10 @@ const CameraScreen = ({ navigation }) => {
         useCamera2Api={true}
         zoom={zoom}
       >
+        <View style={styles.overlay}>
+          <View style={styles.transparentCircle} />
+        </View>
+        
         <TouchableOpacity
           activeOpacity={1}
           onPress={focusCamera}
@@ -221,10 +228,10 @@ const CameraScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   zoomSlider: {
     position: "absolute",
-    right: "40%",
-    bottom: "50%", // Adjust position based on your layout
+    right: "45%",
+    bottom: "50%",
     width: "100%",
-    transform: [{ rotate: '-90deg' }],
+    transform: [{ rotate: "-90deg" }],
     alignItems: "center",
   },
   container: {
@@ -286,6 +293,25 @@ const styles = StyleSheet.create({
     // Set the button position same as the exit button in the camera screen
     top: 50,
     left: 330,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.0)", // Adjust transparency as needed
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  transparentCircle: {
+    width: 265, // Adjust size as needed
+    height: 265, // Adjust size as needed
+    borderRadius: 200, // Half of the width/height
+    backgroundColor: "transparent",
+    borderWidth: 10, // Adjust based on the desired thickness of the gray area
+    borderColor: "rgba(0, 0, 0, 0.75)", // Same as overlay color for smooth blending
+    position: "absolute",
   },
 });
 
