@@ -4,7 +4,7 @@ import { colors } from '../styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, where} from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, where, getDoc, getDocs, or} from "firebase/firestore";
 import {getApp, getAuth, auth , db} from "../firebaseConfig";
 import { useEffect } from 'react';
 
@@ -50,7 +50,42 @@ const ChatDetailScreen = ({ navigation, route }) => {
     }
   }
 
+  const fetchMessages = async () => {
+    try {
+      const messagesQuery = query(
+        collection(db, "messages"),
+        or(
+        where("sender", "==", currentUserId),
+        where("receiver", "==", currentUserId),
+        ),
+        orderBy("timestamp")
+      );
+  
+      const snapshot = await getDocs(messagesQuery);
+      const messagesWithSenderNames = await Promise.all(snapshot.docs.map(async doc => {
+        const messageData = doc.data();
+        console.log(messageData.sender);
+        const senderUid = messageData.sender;
+        const userSnapshot = await getDocs(query(collection(db, "users"), where("uid", "==", senderUid)));
+        const senderName = userSnapshot.docs[0].data().name; // Assuming there's a 'name' field in the user document
+        console.log(userSnapshot);
+        return {
+          ...messageData,
+          senderName: senderName,
+        };
+      }));
+  
+      setMessages(messagesWithSenderNames);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
   useEffect(() => {
+    fetchMessages();
+  }, [currentUserId]);
+
+  /*useEffect(() => {
     // Create a query to fetch messages where the sender or receiver is the current user
     const messagesQuery = query(
       collection(db, "messages"),
@@ -73,7 +108,7 @@ const ChatDetailScreen = ({ navigation, route }) => {
     });
   
     return () => unsubscribe(); // Cleanup function
-  }, [currentUserId]);
+  }, [currentUserId]);*/
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -105,7 +140,7 @@ const ChatDetailScreen = ({ navigation, route }) => {
                 <ScrollView>
                 {messages.map((message, index) => (
                   <View key={index} style={styles.messageContainer}>
-                    <Text style={styles.senderText}>{message.sender}</Text>
+                    <Text style={styles.senderText}>{message.senderName}</Text>
                     <Text style={styles.messageText}>{message.text}</Text>
                   </View>
                 ))}
