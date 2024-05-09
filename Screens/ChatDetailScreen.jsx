@@ -14,7 +14,8 @@ const ChatDetailScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   
   const [currentUserId, setCurrentUserId] = useState('');
-
+  const otherID = route.params.userId[0];
+  console.log("Begin", otherID);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,10 +37,11 @@ const ChatDetailScreen = ({ navigation, route }) => {
   const onSend = async (message) => {
     if (message.trim()) {
       try {
+        console.log("receiverUID",receiverUID);
         const newMessageRef = doc(collection(db, "messages")); // Create a new document reference with auto-generated ID
         await setDoc(newMessageRef, { // Set document data
           sender: currentUserId,
-          receiver: "a",
+          receiver: otherID,
           text: message,
           timestamp: serverTimestamp()
         });
@@ -54,10 +56,8 @@ const ChatDetailScreen = ({ navigation, route }) => {
     try {
       const messagesQuery = query(
         collection(db, "messages"),
-        or(
-        where("sender", "==", currentUserId),
-        where("receiver", "==", currentUserId),
-        ),
+        where("sender", "in", [otherID, currentUserId]),
+        where("receiver", "in", [otherID, currentUserId]),
         orderBy("timestamp")
       );
   
