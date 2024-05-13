@@ -1,237 +1,216 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { colors } from '../styles/globalStyles';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { SafeAreaView, FlatList, TouchableOpacity, StyleSheet, View, Image, Text } from 'react-native';
+import { CustomTopBar } from '../components/Topbar';
+import { CustomBottom_Patient,CustomBottom_Clinic } from '../components/Bottom'; // Or CustomBottom_Clinic based on your user role
 
-import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, where, getDoc, getDocs, or} from "firebase/firestore";
+import { useState, useEffect } from 'react';
+import firebase from 'firebase/app'; // Import Firebase
+import { collection, query, where, getDocs, getDoc } from "firebase/firestore";
 import {getApp, getAuth, auth , db} from "../firebaseConfig";
-import { useEffect } from 'react';
 
-const ChatDetailScreen = ({ navigation, route }) => {
-  const { userName, userAvatar, receiverUID } = route.params; // Assuming you pass receiver UID from the previous screen
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  
-  const [currentUserId, setCurrentUserId] = useState('');
-  const otherID = route.params.userId[0];
-  console.log("Begin", otherID);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = await new Promise((resolve, reject) => {
-          const unsubscribe = auth.onAuthStateChanged(user => {
-            unsubscribe();
-            resolve(user);
-          }, reject);
-        });
-        setCurrentUserId(user?.uid || '');
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+
+const ChatListScreen = ({ navigation }) => {
+  // State for chat participants
+  const [chatParticipants, setChatParticipants] = useState([]);
+
+  const fetchChatData = async () => {
+    try {
+      // Create a promise to wait for the auth state change
+      const user = await new Promise((resolve, reject) => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+          unsubscribe(); // Unsubscribe after the first invocation
+          
+          if (user) {
+            resolve(user); // Resolve with the user object if authenticated
+          } else {
+            resolve(null); // Resolve with null if not authenticated
+          }
+        }, reject);
+      });
+
+      console.log(user.uid);
+      if (user) {
+        const q = query(collection(db, "chats"), where("participants", "array-contains", user.uid));
+        const chatDataSnapshot = await getDocs(q);
+        
+        const fetchedChatData = [];
+        await Promise.all(chatDataSnapshot.docs.map(async (doc) => {
+          const participants = doc.data().participants;
+          const otherUserId = participants.filter(id => id !== user.uid);
+          console.log(otherUserId);
+          
+          //const userSnapshot = await getDocs(collection(db, "users"),otherUserId);
+          const userSnapshot = await getDocs(query(collection(db, "users"), where("uid", "in", otherUserId)));
+          if (userSnapshot.empty) {
+            console.log("No matching documents found.");
+          } else {
+            console.log("Matching documents found.");
+          }
+          userSnapshot.forEach(userDoc => {
+            const otherUserName = userDoc.data().name;
+            fetchedChatData.push({ id: otherUserId, name: otherUserName });
+          });
+        
+
+        }));
+        console.log(fetchedChatData)
+        setChatParticipants(fetchedChatData);
+      } else {
+        setChatParticipants(null);
       }
-    };
-
-    fetchData();
+    } catch (error) {
+      console.error('Error fetching chat data:', error);
+    }
+  };
+  
+  // Call fetchChatData function when component mounts
+  useEffect(() => {
+    fetchChatData();
   }, []);
 
-  const onSend = async (message) => {
-    if (message.trim()) {
-      try {
-        console.log("receiverUID",receiverUID);
-        const newMessageRef = doc(collection(db, "messages")); // Create a new document reference with auto-generated ID
-        await setDoc(newMessageRef, { // Set document data
-          sender: currentUserId,
-          receiver: otherID,
-          text: message,
-          timestamp: serverTimestamp()
-        });
-        setMessage('');
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
-    }
-  }
-
-  const fetchMessages = async () => {
-    try {
-      const messagesQuery = query(
-        collection(db, "messages"),
-        where("sender", "in", [otherID, currentUserId]),
-        where("receiver", "in", [otherID, currentUserId]),
-        orderBy("timestamp")
-      );
-  
-      const snapshot = await getDocs(messagesQuery);
-      const messagesWithSenderNames = await Promise.all(snapshot.docs.map(async doc => {
-        const messageData = doc.data();
-        console.log(messageData.sender);
-        const senderUid = messageData.sender;
-        const userSnapshot = await getDocs(query(collection(db, "users"), where("uid", "==", senderUid)));
-        const senderName = userSnapshot.docs[0].data().name; // Assuming there's a 'name' field in the user document
-        console.log(userSnapshot);
-        return {
-          ...messageData,
-          senderName: senderName,
-        };
-      }));
-  
-      setMessages(messagesWithSenderNames);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchMessages();
-  }, [currentUserId]);
-
-  /*useEffect(() => {
-    // Create a query to fetch messages where the sender or receiver is the current user
-    const messagesQuery = query(
-      collection(db, "messages"),
-      where("sender", "==", currentUserId), // Messages sent by the current user
-      orderBy("timestamp") // Order messages by timestamp
-    );
-    if (messagesQuery.empty) {
-      console.log("No matching messages found.");
-    } else {
-      console.log("Matching messages found.");
-    }
-    // Subscribe to changes in the query
-    const unsubscribe = onSnapshot(messagesQuery, snapshot => {
-      const messages = [];
-      snapshot.forEach(doc => {
-        console.log(doc.data());
-        messages.push(doc.data());
-      });
-      setMessages(messages);
-    });
-  
-    return () => unsubscribe(); // Cleanup function
-  }, [currentUserId]);*/
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-    return (
-          <SafeAreaView style={styles.safeArea}>
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 80}
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => navigation.navigate('ChatDetail', {
+        name: item.name, // Pass chat partner's name
+        // Assuming you have avatarUrl in user document, fetch it similarly as you did for name
+        avatarUrl: item.avatarUrl, // Pass chat partner's avatar URL
+        userId: item.id,
+      })}
     >
-    <View style={styles.header}>
-        <TouchableOpacity style={styles.leftButton} onPress={() => navigation.navigate('Chatlist')}>
-          <Ionicons name="close" size={30} color="gray" />
-        </TouchableOpacity>     
-        {/* Sample here*/}           
-        <Text style={styles.userName}>Alice</Text>
-                    
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileInfo')}>
-          <Image source={require('../assets/Profile.png')} style={styles.userAvatar} />
-        </TouchableOpacity>
-                    
-        {/* <Text style={styles.userName}>{userName}</Text>
-                    
-        <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { userName })}>
-          <Image source={{ uri: userAvatar }} style={styles.userAvatar} />
-        </TouchableOpacity> */}
-    </View>
-                <ScrollView>
-                {messages.map((message, index) => (
-                  <View key={index} style={styles.messageContainer}>
-                    <Text style={styles.senderText}>{message.senderName}</Text>
-                    <Text style={styles.messageText}>{message.text}</Text>
-                  </View>
-                ))}
-                </ScrollView>            
-    <View style={styles.bottom}>
-        <TouchableOpacity style={styles.leftButton} onPress={() => navigation.navigate('Chatlist')}>
-          <Ionicons name="mic" size={30} color="gray" />
-        </TouchableOpacity>   
+      <View style={styles.chatItem}>
+        <Image source={{ uri: item.avatarUrl }} style={styles.avatar} />
+        <View style={styles.messageContainer}>
+          <Text style={styles.title}>{item.name}</Text>
+          {/* You can include additional chat details here */}
+        </View>
+        {/* You can show last message time here */}
+      </View>
+    </TouchableOpacity>
+  );
 
-      <TextInput
-        value={message}
-        onChangeText={setMessage}
-        placeholder="Type your message here..."
-        style={styles.input}
-      />
-      <TouchableOpacity onPress={() => { onSend(message); setMessage(''); }} style={styles.leftButton}>
-        <Ionicons name="send" size={30} color="gray" />
-      </TouchableOpacity>
-
-        <TouchableOpacity style={styles.leftButton} onPress={toggleExpand}>
-          <Ionicons name="add-circle" size={30} color="gray" />
-        </TouchableOpacity>                
-    </View>
-
-
-            </KeyboardAvoidingView>
-            </SafeAreaView>
-    );
-   
-
-  
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <CustomTopBar />
+        <FlatList
+          data={chatParticipants}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+        />
+      </View>
+      {/* <CustomBottom_Patient /> */}
+      <CustomBottom_Clinic />
+    </SafeAreaView>
+  );
 };
+
+
+/*
+const chatData = [
+  { id: '1', name: 'Alice', lastMessage: 'Hi there!', avatarUrl: 'https://example.com/avatar1.jpg', time: '09:00 AM' },
+  { id: '2', name: 'Bob', lastMessage: 'How are you?', avatarUrl: 'https://example.com/avatar2.jpg', time: '09:15 AM' },
+
+];
+
+const ChatListScreen = ({ navigation }) => {
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => navigation.navigate('ChatDetail', {
+        name: item.name, // 传递聊天对象的名字
+        avatarUrl: item.avatarUrl, // 传递聊天对象的头像URL
+      })}
+    >
+      <View style={styles.chatItem}>
+        <Image source={require('../assets/Profile.png')} style={styles.avatar} />
+        <View style={styles.messageContainer}>
+          <Text style={styles.title}>{item.name}</Text>
+          <Text>{item.lastMessage}</Text>
+        </View>
+        <Text style={styles.time}>{item.time}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+      <SafeAreaView style={styles.safeArea}>
+      <View style = {styles.container}>
+      <CustomTopBar />
+      <FlatList
+        data={chatData}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+              />
+        </View>
+      {/* <CustomBottom_Patient /> *//*}
+          <CustomBottom_Clinic />
+    </SafeAreaView>
+  );
+};
+*/
+
 const styles = StyleSheet.create({
-safeArea: {
-    flex: 1, 
-    backgroundColor: colors.gray_background, 
-    justifyContent: 'space-between',
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#EFEFEF',
   },
   container: {
     flex: 1,
     backgroundColor: '#fff',
     },
-  header: {
-    backgroundColor: colors.gray_background, 
-    flexDirection: 'row',
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    padding: 15, 
-    borderBottomWidth: 2, 
-    borderBottomColor: '#ccc', 
-  },
-  leftButton: {
-    
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.green_dark,
-    marginBottom: 8,
-    textAlign: 'center',
- 
-  },
-  userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20, // 圆形头像
+    historycontainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 20,
+    flexGrow: 1,
     },
-    bottom: {
+      container1: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10,
+    flexGrow: 1,
+    },
+  
+  item: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 10,
-    backgroundColor: colors.gray_background, 
-  },
-    input: {
-    flex: 0.8,
-    height: 40,
     backgroundColor: 'white',
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    marginRight: 5,
-    borderWidth: 1,
-    borderColor: '#ccc', // 边框颜色
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 10,
+    alignItems: 'center',
+  },
+  chatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 2, // 保持原样或适当调整
   },
   messageContainer: {
-    backgroundColor: colors.gray_light,
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 10,
+    flex: 1,
+    marginLeft: 20, // 增加从头像到文本的间距
   },
-  messageText: {
-    fontSize: 16,
+  title: {
+    fontSize: 24,
+  },
+  time: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'lightgrey',
+    marginLeft: 16,
+    marginRight: 16,
   },
 });
-export default ChatDetailScreen;
+
+
+export default ChatListScreen;
