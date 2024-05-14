@@ -46,7 +46,8 @@ const AuthScreen = () => {
         // Call setDoc without await
        setDoc(doc(db, "users", user.uid), {
             name: name,
-            email: email
+            email: email,
+            uid:user.uid
         });
         // Navigate to the next screen or perform any other actions
         navigation.navigate('HomeScreen');
