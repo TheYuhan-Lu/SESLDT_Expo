@@ -5,6 +5,8 @@ import { CustomTopBar } from '../components/Topbar';
 import ProfileCard from '../components/ProfileCard';
 import { colors } from '../styles/globalStyles';
 
+import {getApp, getAuth, auth , db, storage} from "../firebaseConfig";
+
 //import firestore from '@react-native-firebase/firestore';
 
 const ProfileScreen = () => {
@@ -23,6 +25,7 @@ const ProfileScreen = () => {
 
     const handleSave = (updatedProfileData) => {
         setProfileData(updatedProfileData); // 更新状态以反映更改
+
 
 /*
         const user = auth().currentUser;
@@ -56,7 +59,7 @@ const ProfileScreen = () => {
         <View style={styles.container1}>
        <ProfileCard
         profileData={{
-            // avatar: 'https://example.com/avatar.jpg', // 用户头像的URL
+            avatar: 'https://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770', // 用户头像的URL
             name: 'John Doe', // 用户名字
             birthday: '1990-01-01', // 生日
             contact: '+1234567890', // 联系方式

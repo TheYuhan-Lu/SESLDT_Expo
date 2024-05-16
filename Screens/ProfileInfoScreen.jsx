@@ -11,13 +11,13 @@ const recordExample = {
     time: "2023-03-03 14:30",
     summary: "Routine Checkup",
     details: "No cavities found.",
-    imageUri: "https://example.com/example-image.jpg", // 示例图片URL
+    imageUri: "gs://sesldtphttps://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770roject.appspot.com/profile/profile_default.jpeg", // 示例图片URL
   };
 
 const ProfileInfoScreen = () => {
     // For testing hardware set
     const initialProfileData = {
-    avatar: 'https://example.com/avatar.jpg', // 或本地require('../path/to/default/avatar.jpg')
+    avatar: 'gs://sesldtproject.appspot.com/profile/profile_default.jphttps://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770eg', // 或本地require('../path/to/default/avatar.jpg')
     name: 'John Doe',
     birthday: '1990-01-01',
     contact: '+1234567890',
@@ -43,7 +43,7 @@ const ProfileInfoScreen = () => {
         <View style={styles.container1}>
        <ProfileCard
         profileData={{
-            // avatar: 'https://example.com/avatar.jpg', // 用户头像的URL
+            avatar: 'gs://sesldtproject.appspot.com/profihttps://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770le/profile_default.jpeg', // 用户头像的URL
             name: 'John Doe', // 用户名字
             birthday: '1990-01-01', // 生日
             contact: '+1234567890', // 联系方式
