@@ -64,7 +64,7 @@ const ProfileScreen = () => {
         updateDoc(profileRef, {
           uid: currentUserId,
           profileData:updatedProfileData
-        });
+        }, { merge: true });
   
     };
 
