@@ -1,10 +1,12 @@
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, View,TouchableOpacity,Text } from 'react-native';
 import { CustomBottom_Clinic, CustomBottom_Patient } from '../components/Bottom';
 import { CustomTopBar } from '../components/Topbar';
 import ProfileCard from '../components/ProfileCard';
 import { colors } from '../styles/globalStyles';
 
+import {getApp, getAuth, auth , db, storage} from "../firebaseConfig";
+import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, where, getDoc, getDocs, or, updateDoc} from "firebase/firestore";
 //import firestore from '@react-native-firebase/firestore';
 
 const ProfileScreen = () => {
@@ -20,28 +22,49 @@ const ProfileScreen = () => {
     
     const settingsOptions = ["Setting", "About", "More"];
     const [profileData, setProfileData] = useState(initialProfileData);
+    //get current user id.
+    const [currentUserId, setCurrentUserId] = useState('');
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const user = await new Promise((resolve, reject) => {
+            const unsubscribe = auth.onAuthStateChanged(user => {
+              unsubscribe();
+              resolve(user);
+            }, reject);
+          });
+          setCurrentUserId(user?.uid || '');
+          const profileRef = doc(db, 'users', user.uid);
+          const profileDoc = await getDoc(profileRef);
+
+            if (profileDoc.exists()) {
+                setProfileData(profileDoc.data());
+            } else {
+                setProfileData(initialProfileData);
+                console.log('No such document!');
+            }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+
+    fetchData();
+    }, []);
+
+
 
     const handleSave = (updatedProfileData) => {
         setProfileData(updatedProfileData); // 更新状态以反映更改
+        console.log(updatedProfileData);
 
-/*
-        const user = auth().currentUser;
-        if (user) {
-          try {
-              // Update profile data in Firestore
-              firestore()
-                  .collection('users')  // 'profiles' was replaced with 'users' to align with your collection name
-                  .doc(user.uid)        // Use the actual user ID
-                  .set(updatedProfileData, { merge: true }); // merge: true ensures that only provided fields are updated
-  
-              alert('Profile updated successfully');
-          } catch (error) {
-              console.error('Failed to update profile:', error);
-              alert('Failed to update profile');
-          }
-      } else {
-          alert('No user is currently logged in.');
-      }*/
+        // Write the new post's data simultaneously in the posts list and the user's post list.
+        const profileRef = doc(db, "users", currentUserId);
+
+        // Set the "capital" field of the city 'DC'
+        updateDoc(profileRef, {
+          uid: currentUserId,
+          profileData:updatedProfileData
+        });
   
     };
 
@@ -55,14 +78,7 @@ const ProfileScreen = () => {
     <ScrollView style={styles.container}>
         <View style={styles.container1}>
        <ProfileCard
-        profileData={{
-            // avatar: 'https://example.com/avatar.jpg', // 用户头像的URL
-            name: 'John Doe', // 用户名字
-            birthday: '1990-01-01', // 生日
-            contact: '+1234567890', // 联系方式
-            address: '123 Example Street, City', // 地址
-            email:'test@gamil.com',
-        }}
+        profileData={profileData}
         onSave={handleSave}
         onCancel={handleCancel}
         /> 
