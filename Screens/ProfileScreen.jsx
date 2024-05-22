@@ -12,7 +12,7 @@ import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, w
 const ProfileScreen = () => {
     // For testing hardware set
     const initialProfileData = {
-    avatar: 'https://example.com/avatar.jpg', // 或本地require('../path/to/default/avatar.jpg')
+    avatar: 'https://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770', // 或本地require('../path/to/default/avatar.jpg')
     name: 'John Doe',
     birthday: '1990-01-01',
     contact: '+1234567890',
@@ -38,10 +38,11 @@ const ProfileScreen = () => {
           const profileDoc = await getDoc(profileRef);
 
             if (profileDoc.exists()) {
-                setProfileData(profileDoc.data());
-            } else {
-                setProfileData(initialProfileData);
-                console.log('No such document!');
+              const profileDataFromDoc = profileDoc.data().profileData;
+              setProfileData(profileDataFromDoc ? profileDataFromDoc : initialProfileData);
+            }
+            else {
+              console.log('No such document!');
             }
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -62,13 +63,17 @@ const ProfileScreen = () => {
 
         // Set the "capital" field of the city 'DC'
         updateDoc(profileRef, {
-          uid: currentUserId,
           profileData:updatedProfileData
         }, { merge: true });
   
     };
 
     const handleCancel = () => {
+    };
+
+    const profileDataWithAvatar = {
+      ...profileData,
+      avatar: profileData.avatar || 'https://example.com/default-avatar.jpg' // Provide a default avatar URL
     };
 
   return (
@@ -78,7 +83,7 @@ const ProfileScreen = () => {
     <ScrollView style={styles.container}>
         <View style={styles.container1}>
        <ProfileCard
-        profileData={profileData}
+        profileData={profileDataWithAvatar}
         onSave={handleSave}
         onCancel={handleCancel}
         /> 

@@ -5,6 +5,9 @@ import ProfileCard from '../components/ProfileCard';
 import { colors } from '../styles/globalStyles';
 import RecordCard from '../components/RecordCard';
 
+import {getApp, getAuth, auth , db, storage} from "../firebaseConfig";
+import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, where, getDoc, getDocs, or, updateDoc} from "firebase/firestore";
+
 const recordExample = {
     clinicName: "Happy Eye Clinic",
     patientName: "John Doe",
@@ -17,7 +20,7 @@ const recordExample = {
 const ProfileInfoScreen = () => {
     // For testing hardware set
     const initialProfileData = {
-    avatar: 'https://example.com/avatar.jpg', // 或本地require('../path/to/default/avatar.jpg')
+    avatar: 'https://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770', // 或本地require('../path/to/default/avatar.jpg')
     name: 'John Doe',
     birthday: '1990-01-01',
     contact: '+1234567890',
@@ -25,14 +28,57 @@ const ProfileInfoScreen = () => {
    email:'test@gamil.com', 
     };
     
+    //const [profileData, setProfileData] = useState(initialProfileData);
     const [profileData, setProfileData] = useState(initialProfileData);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const user = await new Promise((resolve, reject) => {
+            const unsubscribe = auth.onAuthStateChanged(user => {
+              unsubscribe();
+              resolve(user);
+            }, reject);
+          });
+          setCurrentUserId(user?.uid || '');
+          const profileRef = doc(db, 'users', user.uid);
+          const profileDoc = await getDoc(profileRef);
+
+            if (profileDoc.exists()) {
+                setProfileData(profileDoc.data().profileData);
+            } else {
+                setProfileData(initialProfileData);
+                console.log('No such document!');
+            }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+
+    fetchData();
+    }, []);
 
     const handleSave = (updatedProfileData) => {
         setProfileData(updatedProfileData); // 更新状态以反映更改
+        console.log("infoscreen");
+        console.log(updatedProfileData);
+
+        // Write the new post's data simultaneously in the posts list and the user's post list.
+        const profileRef = doc(db, "users", currentUserId);
+
+        // Set the "capital" field of the city 'DC'
+        updateDoc(profileRef, {
+          profileData:updatedProfileData
+        }, { merge: true });
   
     };
 
     const handleCancel = () => {
+    };
+
+    const profileDataWithAvatar = {
+      ...profileData,
+      avatar: profileData.avatar || 'https://example.com/default-avatar.jpg' // Provide a default avatar URL
     };
 
   return (
@@ -42,14 +88,7 @@ const ProfileInfoScreen = () => {
     <ScrollView style={styles.container}>
         <View style={styles.container1}>
        <ProfileCard
-        profileData={{
-            // avatar: 'https://example.com/avatar.jpg', // 用户头像的URL
-            name: 'John Doe', // 用户名字
-            birthday: '1990-01-01', // 生日
-            contact: '+1234567890', // 联系方式
-            address: '123 Example Street, City', // 地址
-            email:'test@gamil.com',
-        }}
+        profileData={profileDataWithAvatar}
         onSave={handleSave}
         onCancel={handleCancel}
         /> 
