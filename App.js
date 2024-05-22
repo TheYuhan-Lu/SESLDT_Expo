@@ -8,6 +8,10 @@ import ChatDetailScreen from './screens/ChatDetailScreen';
 import CameraScreen from './screens/CameraScreen';
 // import CameraScreen from './screens/CameraScreen_VC';
 
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ProfileInfoScreen from './screens/ProfileInfoScreen';
@@ -16,6 +20,17 @@ const Stack = createStackNavigator();
 
 export default function App() {
   console.log("App executed");
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+  }, []);
+
 
   return (
     <NavigationContainer>
