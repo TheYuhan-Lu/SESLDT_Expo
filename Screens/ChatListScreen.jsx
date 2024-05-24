@@ -1,52 +1,101 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, FlatList, TouchableOpacity, StyleSheet, View, Image, Text } from 'react-native';
 import { CustomTopBar } from '../components/Topbar';
-import { CustomBottom_Patient,CustomBottom_Clinic } from '../components/Bottom'; // Or CustomBottom_Clinic based on your user role
-
-
-const chatData = [
-  { id: '1', name: 'Alice', lastMessage: 'Hi there!', avatarUrl: 'https://example.com/avatar1.jpg', time: '09:00 AM' },
-  { id: '2', name: 'Bob', lastMessage: 'How are you?', avatarUrl: 'https://example.com/avatar2.jpg', time: '09:15 AM' },
-
-];
+import { CustomBottom_Clinic, CustomBottom_Patient } from '../components/Bottom';
+import { getAuth, db } from "../firebaseConfig";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 
 const ChatListScreen = ({ navigation }) => {
+  const [chatParticipants, setChatParticipants] = useState([]);
+  const [userRole, setUserRole] = useState(null);
+
+  const fetchChatData = async () => {
+    try {
+      const user = await new Promise((resolve, reject) => {
+        const unsubscribe = getAuth().onAuthStateChanged(user => {
+          unsubscribe();
+          if (user) {
+            resolve(user);
+          } else {
+            resolve(null);
+          }
+        }, reject);
+      });
+
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+
+          const q = query(collection(db, "chats"), where("participants", "array-contains", user.uid));
+          const chatDataSnapshot = await getDocs(q);
+
+          const fetchedChatData = [];
+          await Promise.all(chatDataSnapshot.docs.map(async (doc) => {
+            const participants = doc.data().participants;
+            const otherUserId = participants.filter(id => id !== user.uid);
+
+            const userSnapshot = await getDocs(query(collection(db, "users"), where("uid", "in", otherUserId)));
+            userSnapshot.forEach(userDoc => {
+              const otherUserName = userDoc.data().name;
+              const avatarUrl = userDoc.data().avatarUrl || ''; // Fetch the avatar URL
+              fetchedChatData.push({ id: otherUserId, name: otherUserName, avatarUrl });
+            });
+          }));
+
+          setChatParticipants(fetchedChatData);
+        } else {
+          console.log("No such document!");
+        }
+      } else {
+        setChatParticipants([]);
+      }
+    } catch (error) {
+      console.error('Error fetching chat data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatData();
+  }, []);
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
       onPress={() => navigation.navigate('ChatDetail', {
-        name: item.name, // 传递聊天对象的名字
-        avatarUrl: item.avatarUrl, // 传递聊天对象的头像URL
+        name: item.name,
+        avatarUrl: item.avatarUrl,
+        userId: item.id,
       })}
     >
       <View style={styles.chatItem}>
-        <Image source={require('../assets/Profile.png')} style={styles.avatar} />
+        <Image
+          source={item.avatarUrl ? { uri: item.avatarUrl } : require('../assets/Profile.png')}
+          style={styles.avatar}
+        />
         <View style={styles.messageContainer}>
           <Text style={styles.title}>{item.name}</Text>
-          <Text>{item.lastMessage}</Text>
         </View>
-        <Text style={styles.time}>{item.time}</Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-      <SafeAreaView style={styles.safeArea}>
-      <View style = {styles.container}>
-      <CustomTopBar />
-      <FlatList
-        data={chatData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-              />
-        </View>
-      {/* <CustomBottom_Patient /> */}
-          <CustomBottom_Clinic />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <CustomTopBar />
+        <FlatList
+          data={chatParticipants}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+        />
+      </View>
+      {userRole === 'clinic' ? <CustomBottom_Clinic /> : <CustomBottom_Patient />}
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -56,20 +105,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    },
-    historycontainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 20,
-    flexGrow: 1,
-    },
-      container1: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 10,
-    flexGrow: 1,
-    },
-  
+  },
   item: {
     flexDirection: 'row',
     backgroundColor: 'white',
@@ -87,18 +123,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 2, // 保持原样或适当调整
+    marginRight: 2,
   },
   messageContainer: {
     flex: 1,
-    marginLeft: 20, // 增加从头像到文本的间距
+    marginLeft: 20,
   },
   title: {
     fontSize: 24,
-  },
-  time: {
-    fontSize: 14,
-    color: 'grey',
   },
   separator: {
     height: 1,
@@ -107,6 +139,5 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
 });
-
 
 export default ChatListScreen;

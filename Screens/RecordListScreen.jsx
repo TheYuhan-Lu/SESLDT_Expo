@@ -1,8 +1,10 @@
-import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { CustomBottom_Clinic, CustomBottom_Patient } from '../components/Bottom';
 import { CustomTopBar } from '../components/Topbar';
 import RecordCard from '../components/RecordCard';
+import { auth, db } from '../firebaseConfig'; // Ensure correct imports
+import { doc, getDoc } from 'firebase/firestore';
 
 //To do List：
 // *Navigate to the chat detail page
@@ -11,7 +13,42 @@ import RecordCard from '../components/RecordCard';
 // *A share button that can be easily shared to others via message
 
 const RecordListScreen = ({ navigation }) => {
-const recordExample = {
+  const [userRole, setUserRole] = useState(null);
+
+  const fetchUserRole = async () => {
+    try {
+      const user = await new Promise((resolve, reject) => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+          unsubscribe();
+          if (user) {
+            resolve(user);
+          } else {
+            resolve(null);
+          }
+        }, reject);
+      });
+
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+        } else {
+          console.log("No such document!");
+        }
+      } else {
+        setUserRole(null);
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserRole();
+  }, []);
+
+  const recordExample = {
     clinicName: "Happy Eye Clinic",
     patientName: "John Doe",
     time: "2023-03-03 14:30",
@@ -21,21 +58,21 @@ const recordExample = {
   };
 
   return (
-      <SafeAreaView style={styles.safeArea}>
-          <CustomTopBar />
-          <ScrollView style={styles.container}> 
-              <View style = {styles.container1} >
-                <RecordCard 
-                    record={recordExample} 
-                    isClinicUser={true} // 或根据实际用户角色动态设置
-                     />
+    <SafeAreaView style={styles.safeArea}>
+      <CustomTopBar />
+      <ScrollView style={styles.container}>
+        <View style={styles.container1}>
+          <RecordCard 
+            record={recordExample} 
+            isClinicUser={userRole === 'clinic'} // Dynamically set based on user role
+          />
         </View>
-        </ScrollView>
-          {/* <CustomBottom_Patient /> */}
-          <CustomBottom_Clinic />
+      </ScrollView>
+      {userRole === 'clinic' ? <CustomBottom_Clinic /> : <CustomBottom_Patient />}
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -44,21 +81,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    },
-    historycontainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 20,
-    flexGrow: 1,
-    },
-      container1: {
+  },
+  container1: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 10,
     flexGrow: 1,
-    },
-  
+  },
 });
-
 
 export default RecordListScreen;
