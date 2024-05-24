@@ -10,18 +10,14 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const ProfileScreen = () => {
-    // For testing hardware set
-    const initialProfileData = {
-    avatar: 'https://example.com/avatar.jpg', // 或本地require('../path/to/default/avatar.jpg')
+  const initialProfileData = {
+    avatar: 'https://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770',
     name: 'John Doe',
     birthday: '1990-01-01',
     contact: '+1234567890',
     address: '123 Example Street, City',
-   email:'test@gamil.com', 
-    };
-    
-    const settingsOptions = ["Setting", "About", "More"];
-    const [profileData, setProfileData] = useState(initialProfileData);
+    email: 'test@gamil.com',
+  };
 
   const settingsOptions = ["Setting", "About", "More"];
   const [profileData, setProfileData] = useState(initialProfileData);
@@ -125,8 +121,7 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <CustomTopBar />
-      
-    <ScrollView style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.container1}>
           <ProfileCard
             profileData={profileData}
@@ -149,26 +144,25 @@ const ProfileScreen = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1, 
-    backgroundColor: '#EFEFEF', 
+    flex: 1,
+    backgroundColor: '#EFEFEF',
     justifyContent: 'space-between',
   },
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    },
+  },
   container1: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 10,
     flexGrow: 1,
-    },
+  },
   settingsContainer: {
     marginTop: 20,
-    },
+  },
   settingsButton: {
     padding: 20,
     width: '100%',
@@ -184,8 +178,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.gray_background,
     width: '100%',
-    },
-
+  },
 });
 
 export default ProfileScreen;
