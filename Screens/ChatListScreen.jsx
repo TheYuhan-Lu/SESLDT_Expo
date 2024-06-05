@@ -5,12 +5,15 @@ import { CustomBottom_Clinic, CustomBottom_Patient } from '../components/Bottom'
 import { getAuth, db } from "../firebaseConfig";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 
+// ChatListScreen component displays the list of chat participants
 const ChatListScreen = ({ navigation }) => {
-  const [chatParticipants, setChatParticipants] = useState([]);
-  const [userRole, setUserRole] = useState(null);
+  const [chatParticipants, setChatParticipants] = useState([]); // State to store chat participants
+  const [userRole, setUserRole] = useState(null); // State to store user role
 
+  // Function to fetch chat data from Firestore
   const fetchChatData = async () => {
     try {
+      // Get current authenticated user
       const user = await new Promise((resolve, reject) => {
         const unsubscribe = getAuth().onAuthStateChanged(user => {
           unsubscribe();
@@ -23,15 +26,18 @@ const ChatListScreen = ({ navigation }) => {
       });
 
       if (user) {
+        // Get user document from Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setUserRole(userData.role);
 
+          // Query to get chats involving the current user
           const q = query(collection(db, "chats"), where("participants", "array-contains", user.uid));
           const chatDataSnapshot = await getDocs(q);
 
           const fetchedChatData = [];
+          // Fetch chat participants data
           await Promise.all(chatDataSnapshot.docs.map(async (doc) => {
             const participants = doc.data().participants;
             const otherUserId = participants.filter(id => id !== user.uid);
@@ -56,10 +62,12 @@ const ChatListScreen = ({ navigation }) => {
     }
   };
 
+  // Use effect to fetch chat data on component mount
   useEffect(() => {
     fetchChatData();
   }, []);
 
+  // Render each chat participant item
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
@@ -97,6 +105,7 @@ const ChatListScreen = ({ navigation }) => {
   );
 };
 
+// Styles for the ChatListScreen component
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,

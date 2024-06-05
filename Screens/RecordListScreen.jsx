@@ -6,15 +6,16 @@ import RecordCard from '../components/RecordCard';
 import { auth, db } from '../firebaseConfig'; // Ensure correct imports
 import { doc, getDoc } from 'firebase/firestore';
 
-//To do List：
-// *Navigate to the chat detail page
-// *update/link the page info with the info from database
-// *add multiple record cards(how to add all in the database)
-// *A share button that can be easily shared to others via message
+// To do List:
+// * Navigate to the chat detail page
+// * Update/link the page info with the info from database
+// * Add multiple record cards (how to add all in the database)
+// * A share button that can be easily shared to others via message
 
 const RecordListScreen = ({ navigation }) => {
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState(null); // State to store user role
 
+  // Fetch user role from Firebase
   const fetchUserRole = async () => {
     try {
       const user = await new Promise((resolve, reject) => {
@@ -32,29 +33,31 @@ const RecordListScreen = ({ navigation }) => {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setUserRole(userData.role);
+          setUserRole(userData.role); // Set user role state
         } else {
           console.log("No such document!");
         }
       } else {
-        setUserRole(null);
+        setUserRole(null); // Set user role state to null if no user
       }
     } catch (error) {
       console.error('Error fetching user role:', error);
     }
   };
 
+  // Use effect to fetch user role on component mount
   useEffect(() => {
     fetchUserRole();
   }, []);
 
+  // Example record data to be displayed in the RecordCard component
   const recordExample = {
     clinicName: "Happy Eye Clinic",
     patientName: "John Doe",
     time: "2023-03-03 14:30",
     summary: "Routine Checkup",
     details: "No cavities found.",
-    imageUri: "https://example.com/example-image.jpg", // 示例图片URL
+    imageUri: "https://example.com/example-image.jpg", // Example image URL
   };
 
   return (

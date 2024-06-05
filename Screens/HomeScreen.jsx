@@ -5,6 +5,7 @@ import { CustomTopBar } from '../components/Topbar';
 import { globalStyles, colors } from '../styles/globalStyles';
 import RecordCard from '../components/RecordCard';
 
+// Example record data to be displayed in the RecordCard component
 const recordExample = {
     clinicName: "Happy Eye Clinic",
     patientName: "John Doe",
@@ -14,30 +15,47 @@ const recordExample = {
     imageUri: "https://example.com/example-image.jpg",
 };
 
+// HomeScreen component displays the main content of the home screen
 const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Custom top bar */}
       <CustomTopBar />
+      
+      {/* Scrollable content area */}
       <ScrollView style={styles.container}>
+        
+        {/* Video container with a thumbnail */}
         <View style={[globalStyles.card, styles.videoContainer]}>
           <Image
             style={styles.videoThumbnail}
             source={require('../assets/video.png')} 
           />
         </View>
+        
+        {/* Separator line */}
         <View style={styles.separator} />
+        
+        {/* Title for the latest record section */}
         <Text style={styles.recordTitle}>The latest Record</Text>
+        
+        {/* Separator line */}
         <View style={styles.separator} />
+        
+        {/* RecordCard component to display the record example */}
         <RecordCard 
           record={recordExample} 
           isClinicUser={false}
         />
       </ScrollView>
+      
+      {/* Custom bottom bar for patient */}
       <CustomBottom_Patient />
     </SafeAreaView>
   );
 };
 
+// Styles for the HomeScreen component
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,

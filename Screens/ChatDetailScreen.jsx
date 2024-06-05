@@ -7,14 +7,16 @@ import { useNavigation } from '@react-navigation/native';
 import { collection, query, orderBy, onSnapshot, setDoc, serverTimestamp, doc, where, getDocs } from "firebase/firestore";
 import { getAuth, db } from "../firebaseConfig";
 
+// ChatDetailScreen component handles the chat functionality and UI
 const ChatDetailScreen = ({ navigation, route }) => {
-  const { userName, userAvatar, receiverUID } = route.params; // Assuming you pass receiver UID from the previous screen
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState('');
-  const otherID = route.params.userId[0];
+  const { userName, userAvatar, receiverUID } = route.params; // Get receiver details from navigation params
+  const [message, setMessage] = useState(''); // State to handle the current message input
+  const [messages, setMessages] = useState([]); // State to store the messages
+  const [isExpanded, setIsExpanded] = useState(false); // State to handle expanded view for additional options
+  const [currentUserId, setCurrentUserId] = useState(''); // State to store the current user ID
+  const otherID = route.params.userId[0]; // Get the other user ID from navigation params
 
+  // Fetch current user ID
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,6 +34,7 @@ const ChatDetailScreen = ({ navigation, route }) => {
     fetchData();
   }, []);
 
+  // Fetch messages from Firestore
   useEffect(() => {
     if (currentUserId) {
       const messagesQuery = query(
@@ -56,6 +59,7 @@ const ChatDetailScreen = ({ navigation, route }) => {
     }
   }, [currentUserId]);
 
+  // Function to handle sending a message
   const onSend = async (message) => {
     if (message.trim()) {
       try {
@@ -73,6 +77,7 @@ const ChatDetailScreen = ({ navigation, route }) => {
     }
   };
 
+  // Function to handle image picking
   const handleImagePick = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -99,6 +104,7 @@ const ChatDetailScreen = ({ navigation, route }) => {
     }
   };
 
+  // Function to toggle the expand view for additional options
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };

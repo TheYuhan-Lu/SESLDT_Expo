@@ -9,7 +9,9 @@ import { auth, db, storage } from "../firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+// ProfileScreen component handles the user profile functionalities and UI
 const ProfileScreen = () => {
+  // Initial profile data for testing
   const initialProfileData = {
     avatar: 'https://firebasestorage.googleapis.com/v0/b/sesldtproject.appspot.com/o/profile%2Fprofile_default.jpeg?alt=media&token=37b6901a-762c-4dee-8e44-efc7e7cde770',
     name: 'John Doe',
@@ -20,10 +22,11 @@ const ProfileScreen = () => {
   };
 
   const settingsOptions = ["Setting", "About", "More"];
-  const [profileData, setProfileData] = useState(initialProfileData);
-  const [currentUserId, setCurrentUserId] = useState('');
-  const [userRole, setUserRole] = useState(null);
+  const [profileData, setProfileData] = useState(initialProfileData); // State to handle profile data
+  const [currentUserId, setCurrentUserId] = useState(''); // State to store the current user ID
+  const [userRole, setUserRole] = useState(null); // State to store user role
 
+  // Fetch user data from Firebase
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,6 +58,7 @@ const ProfileScreen = () => {
     fetchData();
   }, []);
 
+  // Function to handle saving the updated profile data
   const handleSave = async (updatedProfileData) => {
     try {
       const profileRef = doc(db, "users", currentUserId);
@@ -67,10 +71,12 @@ const ProfileScreen = () => {
     }
   };
 
+  // Function to handle cancel action (can be customized as needed)
   const handleCancel = () => {
     // Handle cancel action if needed
   };
 
+  // Function to handle image picking from the library
   const handleImagePick = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -82,7 +88,6 @@ const ProfileScreen = () => {
   
       if (!result.cancelled) {
         const uri = result.assets[0].uri;
-        console.log(result.assets[0].uri);
         await uploadImage(uri);
       }
     } catch (error) {
@@ -90,6 +95,7 @@ const ProfileScreen = () => {
     }
   };
 
+  // Function to upload image to Firebase Storage
   const uploadImage = async (uri) => {
     try {
       if (!uri) return;
@@ -97,8 +103,7 @@ const ProfileScreen = () => {
       // Fetch the image data
       const response = await fetch(uri);
       const blob = await response.blob();
-      console.log("UID:", currentUserId);
-      console.log("uri:", response);
+  
       // Create a storage reference
       const storageRef = ref(storage, `profile/${currentUserId}`);
   
