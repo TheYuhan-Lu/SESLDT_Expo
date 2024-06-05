@@ -1,98 +1,109 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput,KeyboardAvoidingView ,Platform} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { globalStyles, colors } from '../styles/globalStyles';
 
-//To do:
-// *set the user group to use edit button
-// *link the data with database
+// To do:
+// * Set the user group to use edit button
+// * Link the data with database
 
+// RecordCard component to display and edit patient records
 const RecordCard = ({ record, isClinicUser }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedSummary, setEditedSummary] = useState(record.summary);
-  const [editedDetails, setEditedDetails] = useState(record.details);
+  const [isExpanded, setIsExpanded] = useState(false); // State to handle expand/collapse of details
+  const [isEditing, setIsEditing] = useState(false); // State to handle edit mode
+  const [editedSummary, setEditedSummary] = useState(record.summary); // State to handle edited summary
+  const [editedDetails, setEditedDetails] = useState(record.details); // State to handle edited details
 
+  // Function to toggle expansion of details
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
+  // Function to toggle edit mode
   const toggleEdit = () => {
     if (isEditing) {
-      // 保存逻辑，此处为示例，根据实际需求实现
+      // Save logic, implement as needed
       console.log('Saving edits', editedSummary, editedDetails);
-      // 假设保存操作成功后，更新原始记录的summary和details
+      // Update the original record's summary and details upon successful save
     }
     setIsEditing(!isEditing);
   };
 
-    return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
-
-    <View style={globalStyles.card}>
-          <View style={styles.top}>
-        <View style={styles.clinicInfo}>
-          <Image
-            style={styles.clinicAvatar}
-            source={require('../assets/Profile.png')} // 本地图片或从record中获取
-          />
-          <Text style={styles.clinicName}>{record.clinicName}</Text>
-        </View>
-        {isClinicUser && (
-          <TouchableOpacity onPress={toggleEdit} style={styles.editButton}>
-            <Text style={styles.label}>{isEditing ? 'Save' : 'Edit'}</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      <View style={styles.recordinfo}>
-        <Text style={styles.name}>{record.patientName}</Text>
-        <Text><Text style={styles.label}>Time:</Text> {record.time}</Text>
-        {isEditing ? (
-            <>
-            <Image source={require('../assets/eys.jpg')} style={styles.detailImage} />    
-            <View style={styles.inputGroup}>
-            <Text style={styles.label}>Summary:</Text>
-            <TextInput
-              value={editedSummary}
-              onChangeText={setEditedSummary}
-              style={styles.input}
-              placeholder="Edit Summary"
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <View style={globalStyles.card}>
+        <View style={styles.top}>
+          <View style={styles.clinicInfo}>
+            <Image
+              style={styles.clinicAvatar}
+              source={require('../assets/Profile.png')} // Local image or obtain from record
             />
+            <Text style={styles.clinicName}>{record.clinicName}</Text>
           </View>
-            <View style={styles.inputGroup}>
-            <Text style={styles.label}>Details:</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={setEditedDetails}
-              value={editedDetails}
-              placeholder="Edit Details"
-            />
-          </View>
-          </>
-        ) : (
-          <>
-            <Text><Text style={styles.label}>Diagnosis:</Text> {record.summary}</Text>
-            {isExpanded && (
-                <>
-                <Text><Text style={styles.label}>Details:</Text> {record.details}</Text>
-                <Image source={require('../assets/eys.jpg')} style={styles.detailImage} />
-              </>
-            )}
-            <TouchableOpacity onPress={toggleExpand} style={styles.moreDetailsButton}>
-              <Text style={styles.moreDetailsText}>{isExpanded ? 'Less' : 'More'} Details</Text>
+          {isClinicUser && (
+            <TouchableOpacity onPress={toggleEdit} style={styles.editButton}>
+              <Text style={styles.label}>{isEditing ? 'Save' : 'Edit'}</Text>
             </TouchableOpacity>
-          </>
-        )}
+          )}
+        </View>
+        <View style={styles.recordinfo}>
+          <Text style={styles.name}>{record.patientName}</Text>
+          <Text><Text style={styles.label}>Time:</Text> {record.time}</Text>
+          {isEditing ? (
+            // Edit mode view
+            <>
+              <Image source={require('../assets/eys.jpg')} style={styles.detailImage} />
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Summary:</Text>
+                <TextInput
+                  value={editedSummary}
+                  onChangeText={setEditedSummary}
+                  style={styles.input}
+                  placeholder="Edit Summary"
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Details:</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setEditedDetails}
+                  value={editedDetails}
+                  placeholder="Edit Details"
+                />
+              </View>
+            </>
+          ) : (
+            // Display mode view
+            <>
+              <Text><Text style={styles.label}>Diagnosis:</Text> {record.summary}</Text>
+              {isExpanded && (
+                <>
+                  <Text><Text style={styles.label}>Details:</Text> {record.details}</Text>
+                  <Image source={require('../assets/eys.jpg')} style={styles.detailImage} />
+                </>
+              )}
+              <TouchableOpacity onPress={toggleExpand} style={styles.moreDetailsButton}>
+                <Text style={styles.moreDetailsText}>{isExpanded ? 'Less' : 'More'} Details</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </View>
-            </View>
-            </KeyboardAvoidingView>
+    </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   top: {
     width: '100%',
-    flexDirection: 'row', // 使得诊所信息和编辑按钮并排显示
-    justifyContent: 'space-between', // 在两侧对齐内容
+    flexDirection: 'row', // Align clinic info and edit button in a row
+    justifyContent: 'space-between', // Align content to both sides
     alignItems: 'center',
     padding: 10,
     backgroundColor: colors.green_light,
@@ -113,32 +124,32 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   recordinfo: {
-    backgroundColor: colors.white, // 背景设置为白色以区分顶部
+    backgroundColor: colors.white, // Set background color to white to differentiate from top
     padding: 10,
-    borderBottomLeftRadius: 10, // 继承自全局卡片样式的圆角
+    borderBottomLeftRadius: 10, // Rounded corners inherited from global card style
     borderBottomRightRadius: 10,
   },
-    detailImage: {
-        marginTop: 20, 
-        marginBottom:20,
-        width: 350,
-        height: 200,
-        borderRadius: 20,
+  detailImage: {
+    marginTop: 20,
+    marginBottom: 20,
+    width: 350,
+    height: 200,
+    borderRadius: 20,
   },
   moreDetailsButton: {
     marginTop: 10,
-    alignSelf: 'center', // 居中显示
+    alignSelf: 'center', // Center align the button
   },
   moreDetailsText: {
     color: colors.green_dark,
   },
   editButton: {
     padding: 5,
-    backgroundColor: colors.blue_light, // 编辑按钮使用不同的背景色
+    backgroundColor: colors.blue_light, // Different background color for edit button
     borderRadius: 5,
   },
   editButtonText: {
-    color: colors.white, // 文本颜色为白色以增强可读性
+    color: colors.white, // White text color for better readability
     fontSize: 14,
   },
   separator: {
@@ -146,30 +157,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     width: '100%',
     alignSelf: 'center',
-    },
+  },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.green_dark,
     marginBottom: 8,
-    textAlign: 'center', // 确保文本居中对齐
+    textAlign: 'center', // Ensure text is centered
   },
   info: {
     fontSize: 16,
     marginBottom: 4,
-    textAlign: 'center', // 确保文本居中对齐
+    textAlign: 'center', // Ensure text is centered
   },
   inputGroup: {
     width: '100%',
     marginBottom: 15,
-    alignItems: 'center', // 使标签和输入框在水平方向上居中
+    alignItems: 'center', // Center align label and input horizontally
   },
   label: {
     fontSize: 16,
     color: colors.green_dark,
     marginBottom: 5,
     fontWeight: 'bold',
-    alignSelf: 'flex-start', // 标签左对齐
+    alignSelf: 'flex-start', // Left align label
   },
   input: {
     fontSize: 16,
@@ -177,8 +188,9 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.green_dark,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    width: '100%', // 输入框占满整个inputGroup宽度
-    textAlign: 'left', // 确保输入文本从左开始
+    width: '100%', // Make input take full width of inputGroup
+    textAlign: 'left', // Ensure input text starts from the left
   },
 });
+
 export default RecordCard;
