@@ -1,109 +1,140 @@
-# SESLDT Expo
+## Project Title
 
-SESLDT Expo is a web/mobile application designed to [describe the main purpose or goal of your application]. This project is set up with Firebase for backend services and includes several screens, components, and styles to provide a seamless user experience.
+The Smartphone-Enabled Slit Lamp Device
 
 ## Table of Contents
 
-- [SESLDT Expo](#sesldt-expo)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
+- [About The Project](#about-the-project)
+  - [Built With](#built-with)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Usage](#usage)
-  - [Configuration](#configuration)
-    - [Firebase Setup](#firebase-setup)
-  - [Project Structure](#project-structure)
-  - [Contributing](#contributing)
-  - [License](#license)
+- [Usage](#usage)
+  - [Screens](#screens)
+- [Project Success Criteria](#project-success-criteria)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgements](#acknowledgements)
 
-## Features
+## About The Project
 
-- User authentication with Firebase
-- Screen navigation using React Navigation
-- Custom components for reuse across the app
-- [Add more features specific to your application]
+This project introduces a handheld, portable slit lamp integrated with smartphone technology, designed to revolutionize eye examinations by enabling patients to capture images of their eyes using their smartphones, facilitating remote consultations with ophthalmologists.
 
-## Installation
+### Built With
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/TheYuhan-Lu/SESLDT_Expo.git
+- [React Native](https://reactnative.dev/)
+- [Firebase](https://firebase.google.com/)
+- [Expo](https://expo.dev/)
+
+## Getting Started
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+Ensure you have the following installed:
+- Node.js
+- npm or yarn
+- Expo CLI
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/TheYuhan-Lu/SESLDT_Expo/.git
    ```
-2. Navigate to the project directory:
-   ```bash
-   cd SESLDT_Expo-main
-   ```
-3. Install the dependencies:
-   ```bash
+2. Install NPM packages
+   ```sh
    npm install
    ```
-   or
-   ```bash
-   yarn install
-   ```
+3. Set up Firebase
+   - Create a Firebase project and enable Firestore and Firebase Authentication.
+   - Add a web app to your Firebase project to get the configuration object.
+   - Create a `firebaseConfig.js` file in your project and add your Firebase configuration.
 
-## Usage
-
-1. Start the development server:
-   ```bash
-   npm start
-   ```
-   or
-   ```bash
-   yarn start
-   ```
-2. Follow the instructions to open the app in your browser or mobile emulator.
-
-## Configuration
-
-### Firebase Setup
-
-1. Replace the `GoogleService-Info.plist` file for iOS and the `google-services.json` file for Android with your own Firebase configuration files.
-2. Update `firebaseConfig.js` with your Firebase project configuration:
    ```javascript
+   // firebaseConfig.js
+   import { initializeApp } from 'firebase/app';
+   import { getFirestore } from 'firebase/firestore';
+   import { getAuth } from 'firebase/auth';
+   import { getStorage } from 'firebase/storage';
+
    const firebaseConfig = {
      apiKey: "YOUR_API_KEY",
      authDomain: "YOUR_AUTH_DOMAIN",
      projectId: "YOUR_PROJECT_ID",
      storageBucket: "YOUR_STORAGE_BUCKET",
      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-     appId: "YOUR_APP_ID",
-     measurementId: "YOUR_MEASUREMENT_ID"
+     appId: "YOUR_APP_ID"
    };
 
-   export default firebaseConfig;
+   const app = initializeApp(firebaseConfig);
+   const db = getFirestore(app);
+   const auth = getAuth(app);
+   const storage = getStorage(app);
+
+   export { db, auth, storage };
    ```
 
-## Project Structure
+4. Start the project
+   ```sh
+   expo start
+   ```
 
-```
-SESLDT_Expo-main/
-│
-├── .vscode/               # VSCode settings
-├── Screens/               # App screens
-├── assets/                # Assets (images, fonts, etc.)
-├── components/            # Reusable components
-├── styles/                # Styling files
-├── App.js                 # Main entry point
-├── GoogleService-Info.plist  # iOS Firebase config
-├── README.md              # Project documentation
-├── app.json               # App configuration
-├── babel.config.js        # Babel configuration
-├── firebaseConfig.js      # Firebase configuration
-├── google-services.json   # Android Firebase config
-├── metro.config.js        # Metro configuration
-├── package-lock.json      # Dependency lock file
-├── package.json           # Project metadata and dependencies
-├── signin.js              # Sign-in screen
-├── signup.js              # Sign-up screen
-├── yarn.lock              # Dependency lock file for Yarn
-└── .gitignore             # Git ignore file
-```
+## Usage
+
+### Screens
+
+1. **ChatListScreen**
+   - Displays a list of chat participants.
+   - Fetches data from Firestore and navigates to ChatDetailScreen on item press.
+
+2. **HomeScreen**
+   - Displays a video container and the latest record.
+   - Integrates ProfileCard and RecordCard components.
+
+3. **ProfileInfoScreen**
+   - Allows users to view and edit their profile.
+   - Includes profile details and a RecordCard for viewing records.
+
+4. **RecordListScreen**
+   - Displays a list of records.
+   - Fetches user role from Firestore and displays records accordingly.
+
+
+### Future Goals
+
+#### Advanced Image Analysis
+
+**Criteria:** Implement image analysis algorithms to automatically detect common eye conditions from the captured images, providing preliminary assessments to the doctors.
+
+**Status:** Not Started. This would involve integrating machine learning models capable of analyzing eye images for common conditions, requiring further development and validation.
+
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and create a pull request with your changes. Make sure to follow the [contributing guidelines](CONTRIBUTING.md) if available.
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+Distributed under the MIT License. See `LICENSE` for more information.
 
+## Contact
+
+
+Project Link: [https://github.com/TheYuhan-Lu/SESLDT_Expo](https://github.com/TheYuhan-Lu/SESLDT_Expo)
+
+## Acknowledgements
+
+- [React Native](https://reactnative.dev/)
+- [Firebase](https://firebase.google.com/)
+- [Expo](https://expo.dev/)
+- [Best README Template](https://github.com/othneildrew/Best-README-Template)
